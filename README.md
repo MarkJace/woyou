@@ -32,7 +32,7 @@
 
 躺着看画，神游万里。后来「卧游」成了中国山水画里的一个母题——不出门，也能游遍天下。
 
-英文名 **Woyou**，副标题 *Armchair atlas — explore the world from your desk.*
+英文名 **Woyou**，*Armchair atlas — explore the world from your desk.*
 
 ---
 
