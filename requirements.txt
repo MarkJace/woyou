@@ -1,0 +1,22 @@
+# 卧游 Woyou · Python 运行时依赖
+#
+# 适用版本：v0.4.0
+# Python：>= 3.11
+#
+# 安装：
+#   python -m pip install -r requirements.txt
+#
+# 与 pyproject.toml 的 [project].dependencies 对应；
+# 以下版本是 v0.4.0 验证通过的组合。
+# 升级依赖后建议先跑：pytest -q
+
+fastapi==0.162.2
+uvicorn[standard]==0.54.0
+Jinja2==3.1.6
+httpx==0.28.1
+PyYAML==6.0.3
+pydantic-settings==2.16.2
+
+# ---- 可选：开发 / 测试 ----------------------------------------------------
+# pytest==9.2.0
+# ruff>=0.5

@@ -59,6 +59,13 @@ woyou
 
 终端会显示一个简洁的启动面板，并尝试打开系统浏览器。若没有自动打开，按住 Ctrl 点击面板里的地址，或复制到浏览器即可。
 
+如果只想复现依赖、不安装项目本身：
+
+```bash
+pip install -r requirements.txt
+python -m woyou
+```
+
 不安装也可以直接运行：
 
 ```bash

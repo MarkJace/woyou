@@ -1,0 +1,2 @@
+# 兼容单数文件名；实际依赖清单见 requirements.txt
+-r requirements.txt
