@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b6bcb">
+  <title>卧游 Woyou · 个人地理探索台</title>
+  <link rel="stylesheet" href="/static/vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div id="map" aria-label="世界地图"></div>
+  <canvas id="heatmap-canvas" class="weather-canvas" aria-hidden="true"></canvas>
+  <canvas id="wind-canvas" class="weather-canvas" aria-hidden="true"></canvas>
+  <div class="map-shade" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="卧游首页">
+      <span class="brand-mark">卧</span>
+      <span class="brand-text"><strong>卧游</strong><small>WOYOU</small></span>
+    </a>
+
+    <div class="search-wrap">
+      <form class="searchbox" id="search-form" autocomplete="off">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg>
+        <input id="search-input" type="search" placeholder="搜索城市、山川、地点…" aria-label="搜索地点">
+        <button type="submit" id="search-btn">搜索</button>
+      </form>
+      <div class="search-results hidden" id="search-results" role="listbox"></div>
+    </div>
+
+    <div class="top-actions">
+      <div class="unit-toggle" id="unit-toggle" role="group" aria-label="温度单位">
+        <button type="button" data-unit="metric" class="active">°C</button>
+        <button type="button" data-unit="imperial">°F</button>
+      </div>
+      <button class="icon-btn" id="streetview-btn" type="button" title="街景" aria-label="打开街景图层">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4V8Z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+      </button>
+      <button class="icon-btn" id="theme-btn" type="button" title="切换明暗主题" aria-label="切换明暗主题">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path></svg>
+      </button>
+      <button class="icon-btn" id="settings-btn" type="button" title="设置" aria-label="设置">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21h-4v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3v-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.5V3h4v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.5 1h.1v4h-.1a1.7 1.7 0 0 0-1.5 1Z"></path></svg>
+      </button>
+      <button class="icon-btn mobile-only" id="layers-btn" type="button" title="图层" aria-label="打开图层面板">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"></path><path d="m3 12 9 5 9-5"></path><path d="m3 16 9 5 9-5"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <aside class="panel layer-panel" id="layer-panel">
+    <div class="panel-head">
+      <div>
+        <h2>地图图层</h2>
+        <p>底图、天气与环境图层</p>
+      </div>
+      <button class="icon-btn small" id="close-layers" type="button" aria-label="关闭图层面板">✕</button>
+    </div>
+
+    <div class="panel-scroll">
+      <section class="layer-section">
+        <h3>底图</h3>
+        <label class="mini-check"><input type="checkbox" id="composite-toggle"><span>多源合成</span></label>
+        <div id="base-list" class="layer-list"></div>
+        <div class="opacity-control hidden" id="composite-controls">
+          <label for="composite-opacity">叠加透明度 <span id="composite-opacity-value">55%</span></label>
+          <input type="range" id="composite-opacity" min="10" max="100" value="55">
+        </div>
+      </section>
+
+      <section class="layer-section">
+        <h3>天气图层</h3>
+        <div id="weather-list" class="layer-list"></div>
+        <div class="opacity-control" id="opacity-control">
+          <label for="opacity-slider">叠加透明度 <span id="opacity-value">60%</span></label>
+          <input type="range" id="opacity-slider" min="0" max="100" value="60">
+        </div>
+      </section>
+
+      <section class="layer-section">
+        <h3>街景</h3>
+        <div id="streetview-list" class="layer-list"></div>
+        <div class="radar-status" id="sv-status">KartaView · 未开启</div>
+      </section>
+
+      <section class="layer-section">
+        <h3>环境图层</h3>
+        <div id="env-list" class="layer-list"></div>
+        <div id="layer-legend" class="layer-legend hidden"></div>
+      </section>
+    </div>
+  </aside>
+
+  <section class="panel weather-card" id="weather-card" aria-live="polite">
+    <div class="wx-top">
+      <div class="wx-location">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>
+        <div><strong id="wx-place">正在定位…</strong><span id="wx-sub">—</span></div>
+      </div>
+      <button class="icon-btn small" id="wx-refresh" type="button" title="刷新天气" aria-label="刷新天气">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"></path><path d="M20 4v7h-7"></path></svg>
+      </button>
+    </div>
+
+    <div class="wx-now">
+      <div class="wx-icon" id="wx-icon" aria-hidden="true"></div>
+      <div class="wx-temp"><span id="wx-temp">--</span><sup id="wx-unit">°C</sup></div>
+      <div class="wx-summary"><strong id="wx-desc">—</strong><span id="wx-range">—</span></div>
+    </div>
+
+    <div class="wx-metrics">
+      <div><span>体感</span><strong id="wx-feels">—</strong></div>
+      <div><span>湿度</span><strong id="wx-humidity">—</strong></div>
+      <div><span>风</span><strong id="wx-wind">—</strong></div>
+      <div><span>降水</span><strong id="wx-precip">—</strong></div>
+    </div>
+
+    <div class="wx-hours-head"><span>未来 24 小时</span><span id="wx-tz">—</span></div>
+    <div class="wx-hourly" id="wx-hourly"></div>
+    <div class="wx-daily" id="wx-daily"></div>
+  </section>
+
+  <div class="timeline hidden" id="timeline">
+    <button class="play-btn" id="radar-play" type="button" aria-label="播放雷达动画">▶</button>
+    <div class="timeline-main">
+      <input type="range" id="radar-range" min="0" max="0" value="0" aria-label="雷达时间">
+      <div class="timeline-meta"><span id="radar-time">—</span><span id="radar-mode">历史回波</span></div>
+    </div>
+    <button class="icon-btn small" id="timeline-close" type="button" aria-label="关闭雷达">✕</button>
+  </div>
+
+  <div class="attribution" id="attribution"></div>
+
+  <footer class="statusbar">
+    <span id="status-coords">—</span>
+    <span id="status-zoom">z—</span>
+    <span id="status-source">—</span>
+    <span id="status-health" class="health"><i></i>检查中</span>
+  </footer>
+
+  <div class="modal-backdrop hidden" id="settings-modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div class="modal-head">
+        <h2 id="settings-title">设置</h2>
+        <button class="icon-btn small" id="settings-close" type="button" aria-label="关闭设置">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="setting-row">
+          <div><strong>温度单位</strong><span>同时影响天气卡片与图层提示</span></div>
+          <div class="unit-toggle" id="unit-toggle-modal">
+            <button type="button" data-unit="metric" class="active">°C</button>
+            <button type="button" data-unit="imperial">°F</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div><strong>主题</strong><span>界面明暗，不影响地图影像</span></div>
+          <select id="theme-select">
+            <option value="light">浅色</option>
+            <option value="dark">深色</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div><strong>跟随地图中心</strong><span>移动地图后自动更新天气</span></div>
+          <label class="switch"><input type="checkbox" id="follow-toggle"><span></span></label>
+        </div>
+        <div class="setting-row">
+          <div><strong>雷达动画速度</strong><span>回波帧之间的间隔</span></div>
+          <select id="speed-select">
+            <option value="slow">慢</option>
+            <option value="normal" selected>正常</option>
+            <option value="fast">快</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <div><strong>本地缓存</strong><span id="cache-info">正在读取…</span></div>
+          <button class="ghost-btn" id="cache-refresh" type="button">刷新</button>
+        </div>
+        <div class="about">
+          <strong>卧游 Woyou</strong>
+          <span>版本 <span id="about-version">0.4.0</span> · 本地运行 · 无需代理</span>
+          <span>影像与天气数据版权归各来源所有，仅供个人观察学习。</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="streetview-modal hidden" id="streetview-modal">
+    <div class="streetview-box">
+      <div class="streetview-head">
+        <div><strong>街景 · KartaView</strong><span id="sv-meta">—</span></div>
+        <button class="icon-btn small" id="sv-close" type="button" aria-label="关闭街景">✕</button>
+      </div>
+      <div class="streetview-body">
+        <img id="sv-image" class="hidden" alt="街景照片">
+        <div class="streetview-empty hidden" id="sv-empty">没有可显示的街景图片</div>
+      </div>
+      <div class="streetview-foot">
+        <button class="ghost-btn" id="sv-prev" type="button">← 上一张</button>
+        <span id="sv-count">0 / 0</span>
+        <button class="ghost-btn" id="sv-next" type="button">下一张 →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast" role="status"></div>
+
+  <noscript>卧游需要启用 JavaScript 才能显示地图。</noscript>
+  <script src="/static/vendor/maplibre-gl.js"></script>
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

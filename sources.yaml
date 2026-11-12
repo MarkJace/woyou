@@ -1,0 +1,83 @@
+# 卧游数据源配置
+#
+# 这里是默认配置的覆写层：同 id 的项会覆盖内置默认值，新 id 会追加。
+# 每个源需要的字段见 README / plan.md；改完重启 `woyou` 即可生效。
+#
+# 提示：
+# - 只添加许可清晰、允许直接访问的数据源。
+# - `cache: false` 的源不会被写入本地缓存（例如条款禁止缓存的商业影像）。
+# - `date_offset` 用于按天变化的图层（-1 表示昨天），URL 里可用 {date}。
+# - 中国区域建议使用天地图；使用前请自行申请 key，并遵守其服务条款。
+
+- id: osm
+  name: 街道地图
+  category: base
+  max_zoom: 19
+  attribution: "© OpenStreetMap contributors"
+  cache: true
+  headers:
+    User-Agent: "Woyou/0.1 (personal geography tool)"
+
+- id: esri-imagery
+  name: 卫星影像
+  category: base
+  max_zoom: 19
+  attribution: "Esri, Maxar, Earthstar Geographics"
+  cache: true
+
+- id: esri-street
+  name: 街道地图 · Esri
+  category: base
+  max_zoom: 19
+  attribution: "Esri, HERE, Garmin, © OpenStreetMap contributors"
+  cache: true
+- id: carto-voyager
+  name: 街道地图 · Carto Voyager
+  category: base
+  max_zoom: 19
+  attribution: "© OpenStreetMap contributors © CARTO"
+  cache: true
+
+- id: carto-light
+  name: 街道地图 · Carto Light
+  category: base
+  max_zoom: 19
+  attribution: "© OpenStreetMap contributors © CARTO"
+  cache: true
+
+- id: osm-hot
+  name: 街道地图 · OSM HOT
+  category: base
+  max_zoom: 19
+  attribution: "© OpenStreetMap contributors, HOT"
+  cache: true
+
+- id: carto-labels
+  name: 街道标注（透明）
+  category: base
+  max_zoom: 19
+  attribution: "© OpenStreetMap contributors © CARTO"
+  cache: true
+
+- id: esri-topo
+  name: 地形图
+  category: base
+  max_zoom: 19
+  attribution: "Esri, HERE, Garmin, USGS"
+  cache: true
+
+- id: eox-s2cloudless-2024
+  name: 无云影像 2024
+  category: base
+  max_zoom: 14
+  attribution: "Sentinel-2 cloudless by EOX (modified Copernicus data)"
+  cache: true
+
+- id: gibs-clouds
+  name: 卫星云图
+  category: weather
+  max_zoom: 9
+  date_offset: -1
+  opacity: 0.55
+  attribution: "NASA GIBS / MODIS Terra"
+  cache: true

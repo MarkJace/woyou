@@ -1,0 +1,103 @@
+# ---------------------------------------------------------------------------
+# 卧游 Woyou · .gitignore
+# 原则：源码与配置示例入库；环境、缓存、运行时数据、密钥一律忽略。
+# ---------------------------------------------------------------------------
+
+# ---- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+
+# 测试与类型检查缓存
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# 构建产物
+build/
+dist/
+*.egg
+*.egg-info/
+.eggs/
+*.spec
+
+# ---- 虚拟环境 -------------------------------------------------------------
+/proj_env/
+.venv/
+venv/
+env/
+ENV/
+
+# ---- 运行时数据 -----------------------------------------------------------
+# 默认数据目录：SQLite 数据库 + MBTiles 瓦片缓存
+/data/
+/test_data/
+/test_cli/
+/run_*/
+
+# 瓦片、离线包、离线百科
+*.mbtiles
+*.pmtiles
+*.zim
+
+# 数据库及其 WAL/SHM 临时文件
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.mbtiles-wal
+*.mbtiles-shm
+
+# 通用缓存与补丁残留
+.cache/
+*.orig
+*.rej
+*.pid
+
+# 日志与临时文件
+*.log
+logs/
+*.tmp
+*.bak
+
+# ---- 密钥与本地配置 -------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+secrets.json
+credentials.json
+*.pem
+*.key
+
+# 用户本地覆盖配置（示例 sources.yaml 本身入库）
+sources.local.yaml
+config.local.yaml
+
+# ---- 前端 / Node（仅开发冒烟测试可能用到）--------------------------------
+node_modules/
+.npm/
+.pnpm-store/
+npm-debug.log*
+yarn-error.log*
+
+# ---- 编辑器 / 操作系统 ----------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+.DS_Store
+Thumbs.db
+desktop.ini
